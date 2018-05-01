@@ -74,10 +74,9 @@ namespace Simulation
             for (int i = 0; i < PacketsToSend; ++i)
             {
                 string content = "Packet with index " + i;
-                string location = source.IP;
-                int ttl = rnd.Next(packetTtlRange[0], packetTtlRange[1]);
+                int ttl = rnd.Next(packetTtlRange[0], (packetTtlRange[1] + 1));
 
-                Packet packet = new Packet(content, location, destination.IP, ttl);
+                Packet packet = new Packet(content, source.IP, destination.IP, ttl);
 
                 source.Packets.Enqueue(packet);
             }
@@ -98,6 +97,13 @@ namespace Simulation
                 {
                     Console.WriteLine("\t" + neighbor.IP);
                 }
+                Console.WriteLine("Packets: ");
+                foreach (Packet packet in item.Packets)
+                {
+                    Console.WriteLine("\t" + packet.Content + " with TTL " + packet.TTL);
+                }
+                if (item.Packets.Count == 0)
+                    Console.WriteLine("No packets.");
                 Console.WriteLine("\n\n");
             }
 
@@ -116,12 +122,6 @@ namespace Simulation
                     else
                         Console.Write(" \t");
                 }
-            }
-
-            // Print all packets and their information
-            foreach ( Packet item in source.Packets )
-            {
-                Console.WriteLine(item.Content + " with TTL " + item.TTL);
             }
 
             // Keep console open
