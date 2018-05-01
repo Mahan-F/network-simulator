@@ -13,7 +13,7 @@ namespace Simulation
             // Program settings
             int TotalNodes = 10;
             int PacketsToSend = 10;
-            int MaxNodesConnected = 3;
+            int MaxNodesConnected = 4;
             int[] packetTtlRange = { 3, 8 }; // Range of TTL for packets
             string IpPrefix = "192.168.1.";
 
@@ -43,26 +43,42 @@ namespace Simulation
             // Link Nodes together
             foreach ( Node node in network )
             {
+                int numberOfNeighbors = rnd.Next(1, (MaxNodesConnected + 1));
 
-                for (int j = 0; j < rnd.Next(1, (MaxNodesConnected + 1)); ++j)
+                // Connect node to a random number of nodes
+                for (int j = 0; j < (numberOfNeighbors - node.Next.Count); ++j)
                 {
+                    // Initialize the node with minimum connections to be the first unless we are on the first node
                     Node minConnections = network.First();
-                    if (node == network.First())
-                        minConnections = network[1];
+                    int minConnectionsIndex = 0;
 
+                    if (node == network.First())
+                    {
+                        minConnections = network[1];
+                        minConnectionsIndex = 1;
+                    }
+
+                    // Find the node with the least number of connections
                     for (int k = 0; k < TotalNodes; ++k)
                     {
                         if (network[k] != node 
                             && node.Next.IndexOf(network[k]) == -1 
+                            && network.ElementAt(k).Next.Count < MaxNodesConnected
                             && network.ElementAt(k).Next.Count < minConnections.Next.Count)
                         {
                             minConnections = network.ElementAt(k);
+                            minConnectionsIndex = k;
                         }
                     }
 
-                    if (node.Next.IndexOf(minConnections) == -1 
-                        && minConnections.Next.Count < MaxNodesConnected)
+                    if (node.Next.IndexOf(minConnections) == -1
+                        && minConnections.Next.IndexOf(node) == -1
+                        && minConnections.Next.Count < MaxNodesConnected
+                        && node.Next.Count < MaxNodesConnected)
+                    {
                         node.Next.Add(minConnections);
+                        network.ElementAt(minConnectionsIndex).Next.Add(node);
+                    }
                 }
 
             }
