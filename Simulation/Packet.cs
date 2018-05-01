@@ -10,7 +10,7 @@ namespace Simulation
         public string Location;
         public string Destination;
         public int TTL;
-        public int TimesTransferred;
+        public List<string> PathTaken;
 
         // Constructor
         public Packet(string _content, string _location, string _destination, int _ttl)
@@ -19,7 +19,8 @@ namespace Simulation
             Location = _location;
             Destination = _destination;
             TTL = _ttl;
-            TimesTransferred = 0;
+            PathTaken = new List<string>();
+            PathTaken.Add(_location);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Simulation
             // Initialize random number generator
             Random rnd = new Random();
 
-            // Create the network and add the starting Node
+            // Create the network
             List<Node> network = new List<Node>();
 
             // Create all Nodes
@@ -81,8 +81,18 @@ namespace Simulation
                 source.Packets.Enqueue(packet);
             }
 
-            // Show the network list to make sure its correct
-            Console.WriteLine("\nThe list of the network is: \n");
+
+
+
+
+
+
+
+
+
+            /***************
+             * DEBUG STUFF *
+             **************/
 
             // Print the list of all nodes, their IP and their neighbors' IP
             Console.WriteLine("Starting node: " + source.IP);
@@ -101,12 +111,23 @@ namespace Simulation
                 foreach (Packet packet in item.Packets)
                 {
                     Console.WriteLine("\t" + packet.Content + " with TTL " + packet.TTL);
+                    Console.WriteLine("\t\tPath taken: ");
+                    foreach ( string path in packet.PathTaken )
+                    {
+                        Console.WriteLine("\t\t" + path);
+                    }
                 }
                 if (item.Packets.Count == 0)
                     Console.WriteLine("No packets.");
                 Console.WriteLine("\n\n");
             }
 
+
+
+
+
+
+            /*
             // Print the table of all nodes and their connections
             for (int i = 0; i < TotalNodes; i++)
             {
@@ -122,7 +143,7 @@ namespace Simulation
                     else
                         Console.Write(" \t");
                 }
-            }
+            }*/
 
             // Keep console open
             Console.WriteLine("\n\nPress enter to close...");
