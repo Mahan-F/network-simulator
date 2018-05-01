@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,20 +9,26 @@ namespace Simulation
     {
         private string _IP;
         private List<Node> _Next = new List<Node>();
+        private Queue<Packet> _Packets = new Queue<Packet>();
+
         static Random rnd = new Random();
 
         public string IP
         {
             get { return _IP; }
             set { _IP = value; }
-
         }
 
         public List<Node> Next
         {
             get { return _Next; }
             set { _Next = value; }
+        }
 
+        public Queue<Packet> Packets
+        {
+            get { return _Packets; }
+            set { _Packets = value; }
         }
 
         // Constructor
