@@ -12,14 +12,15 @@ namespace Simulation
         {
             // Program settings
             int TotalNodes = 10;
-            int PacketsToSend = 100;
+            int PacketsToSend = 10;
             int MaxNodesConnected = 3;
+            int[] packetTtlRange = { 3, 8 }; // Range of TTL for packets
             string IpPrefix = "192.168.1.";
 
-            RunSimulation(TotalNodes, PacketsToSend, MaxNodesConnected, IpPrefix);
+            RunSimulation(TotalNodes, PacketsToSend, MaxNodesConnected, packetTtlRange, IpPrefix);
         }
 
-        static void RunSimulation(int TotalNodes, int PacketsToSend, int MaxNodesConnected, string IpPrefix)
+        static void RunSimulation(int TotalNodes, int PacketsToSend, int MaxNodesConnected, int[] packetTtlRange, string IpPrefix)
         {
 
             // Initialize random number generator
@@ -35,8 +36,8 @@ namespace Simulation
                 network.Add(newNode);
             }
 
-            // Set first and last
-            Node start = network.First();
+            // Set source and destination
+            Node source = network.First();
             Node destination = network.Last();
 
             // Link Nodes together
@@ -66,22 +67,26 @@ namespace Simulation
 
             }
 
+            // Randomise the network "Shuffle"
             network = network.OrderBy(x => rnd.Next()).ToList();
 
             // Create all packets and place them in the starting node
             for (int i = 0; i < PacketsToSend; ++i)
             {
                 string content = "Packet with index " + i;
-                string location = start.IP;
-                int ttl = rnd.Next(5, 11);
+                string location = source.IP;
+                int ttl = rnd.Next(packetTtlRange[0], packetTtlRange[1]);
 
                 Packet packet = new Packet(content, location, destination.IP, ttl);
+
+                source.Packets.Enqueue(packet);
             }
 
             // Show the network list to make sure its correct
             Console.WriteLine("\nThe list of the network is: \n");
 
-            /*Console.WriteLine("Starting node: " + start.IP);
+            // Print the list of all nodes, their IP and their neighbors' IP
+            Console.WriteLine("Starting node: " + source.IP);
             Console.WriteLine("Ending node: " + destination.IP + "\n");
 
             foreach ( Node item in network )
@@ -94,13 +99,13 @@ namespace Simulation
                     Console.WriteLine("\t" + neighbor.IP);
                 }
                 Console.WriteLine("\n\n");
-            }*/
+            }
 
+            // Print the table of all nodes and their connections
             for (int i = 0; i < TotalNodes; i++)
             {
                 Console.Write("\t" + i);
             }
-            
             for ( int r = 0; r < TotalNodes; ++r )
             {
                 Console.Write("\n" + r + "\t");
@@ -113,6 +118,13 @@ namespace Simulation
                 }
             }
 
+            // Print all packets and their information
+            foreach ( Packet item in source.Packets )
+            {
+                Console.WriteLine(item.Content + " with TTL " + item.TTL);
+            }
+
+            // Keep console open
             Console.WriteLine("\n\nPress enter to close...");
             Console.ReadLine();
         }
