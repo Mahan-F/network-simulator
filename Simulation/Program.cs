@@ -116,7 +116,7 @@ namespace Simulation
 
                 foreach ( Node neighbor in current.Next )
                 {
-                    Packet newPacket = packet;
+                    Packet newPacket = Packet.Clone(packet);
 
                     // Send the packet only if it's not going back or to the original sender
                     if ( neighbor.IP != packet.Sender && neighbor.IP != packet.Source )

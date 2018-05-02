@@ -24,5 +24,11 @@ namespace Simulation
             PathTaken = new List<string>();
             PathTaken.Add(_source);
         }
+
+        public static Packet Clone(Packet original)
+        {
+            Packet packet = new Packet(original.Content, original.Source, original.Destination, original.TTL);
+            return packet;
+        }
     }
 }
