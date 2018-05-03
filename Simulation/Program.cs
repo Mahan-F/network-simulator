@@ -14,7 +14,7 @@ namespace Simulation
         {
             // Program settings
             int TotalNodes = 10;
-            int PacketsToSend = 10;
+            int PacketsToSend = 100;
             int MaxNodesConnected = 4;
             int[] packetTtlRange = { 3, 8 }; // Range of TTL for packets
             string IpPrefix = "192.168.1.";
@@ -105,7 +105,7 @@ namespace Simulation
                 SendAllPackets(source, destination, nodesToSend.Dequeue());
 
             // Pring a list of nodes and packets for debugging
-            Print(source, destination, network);
+            Print(source, destination, network, PacketsToSend);
 
             // Keep console open
             Console.WriteLine("\n\nPress enter to close...");
@@ -141,12 +141,13 @@ namespace Simulation
             }
         }
 
-        static void Print(Node source, Node destination, List<Node> network)
+        static void Print(Node source, Node destination, List<Node> network, int packetsToSend)
         {
 
             // Print the list of all nodes, their IP and their neighbors' IP
             Console.WriteLine("Starting node: " + source.IP);
-            Console.WriteLine("Ending node: " + destination.IP + "\n");
+            Console.WriteLine("Ending node: " + destination.IP);
+            Console.WriteLine("Packets received: " + destination.Packets.Count + "/" + packetsToSend + "\n");
 
             foreach (Node item in network)
             {
