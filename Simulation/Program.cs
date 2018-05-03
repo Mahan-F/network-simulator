@@ -100,6 +100,7 @@ namespace Simulation
             // Send all packets from source node
             SendAllPackets(network, source, destination, source);
 
+            // Pring a list of nodes and packets for debugging
             Print(source, destination, network);
 
             // Keep console open
@@ -109,33 +110,30 @@ namespace Simulation
 
         static void SendAllPackets(List<Node> network, Node source, Node destination, Node current)
         {
-            int ran = 1;
-
-            foreach ( Packet packet in current.Packets )
+            if (current != destination)
             {
-
-                foreach ( Node neighbor in current.Next )
+                foreach (Packet packet in current.Packets)
                 {
-                    Packet newPacket = Packet.Clone(packet);
-
-                    // Send the packet only if it's not going back or to the original sender
-                    if ( neighbor.IP != packet.Sender && neighbor.IP != packet.Source )
+                    if (packet.TTL != 0)
                     {
-                        newPacket.Sender = current.IP;
-                        newPacket.PathTaken.Add(neighbor.IP);
-                        newPacket.TTL--;
-                        if (ran == 1)
+                        foreach (Node neighbor in current.Next)
                         {
-                            newPacket.PathTaken.Add("taken here");
-                            ran++;
+                            Packet newPacket = Packet.Clone(packet);
+
+                            // Send the packet only if it's not going back or to the original sender
+                            if (neighbor.IP != packet.Sender && neighbor.IP != packet.Source)
+                            {
+                                newPacket.Sender = current.IP;
+                                newPacket.PathTaken.Add(neighbor.IP);
+                                newPacket.TTL--;
+                                neighbor.Packets.Enqueue(newPacket);
+                            }
                         }
-                        neighbor.Packets.Enqueue(newPacket);
                     }
                 }
+                // All packets are sent so clear the queue
+                current.Packets.Clear();
             }
-
-            // All packets are sent so clear the queue
-            current.Packets.Clear();
         }
 
         static void Print(Node source, Node destination, List<Node> network)
