@@ -13,16 +13,17 @@ namespace Simulation
         static void Main()
         {
             // Program settings
-            int TotalNodes = 10;
-            int PacketsToSend = 100;
-            int MaxNodesConnected = 4;
+            int totalNodes = 10;
+            int packetsToSend = 100;
+            int maxPacketsPerNode = 100;
+            int maxNodesConnected = 4;
             int[] packetTtlRange = { 3, 8 }; // Range of TTL for packets
-            string IpPrefix = "192.168.1.";
+            string ipPrefix = "192.168.1.";
 
-            RunSimulation(TotalNodes, PacketsToSend, MaxNodesConnected, packetTtlRange, IpPrefix);
+            RunSimulation(totalNodes, packetsToSend, maxNodesConnected, packetTtlRange, ipPrefix, maxPacketsPerNode);
         }
 
-        static void RunSimulation(int TotalNodes, int PacketsToSend, int MaxNodesConnected, int[] packetTtlRange, string IpPrefix)
+        static void RunSimulation(int TotalNodes, int PacketsToSend, int MaxNodesConnected, int[] packetTtlRange, string IpPrefix, int maxPacketsPerNode)
         {
 
             // Initialize random number generator
@@ -34,7 +35,7 @@ namespace Simulation
             // Create all Nodes
             for (int i = 0; i < TotalNodes; ++i)
             {
-                Node newNode = new Node(network, IpPrefix);
+                Node newNode = new Node(network, IpPrefix, maxPacketsPerNode);
                 network.Add(newNode);
             }
 

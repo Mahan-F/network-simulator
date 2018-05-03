@@ -10,6 +10,7 @@ namespace Simulation
         private string _IP;
         private List<Node> _Next = new List<Node>();
         private Queue<Packet> _Packets = new Queue<Packet>();
+        private int _MaxPackets;
 
         static Random rnd = new Random();
 
@@ -31,30 +32,36 @@ namespace Simulation
             set { _Packets = value; }
         }
 
-        // Constructor
-        public Node(List<Node> network, string IpPrefix)
+        public int MaxPackets
         {
-            IP = generateIP(network, IpPrefix);
+            get { return _MaxPackets; }
+            set { _MaxPackets = value; }
+        }
+
+        // Constructor
+        public Node(List<Node> network, string ipPrefix, int maxPackets)
+        {
+            IP = generateIP(network, ipPrefix);
+            MaxPackets = maxPackets;
         }
 
         // Add item to packets queue
         public void AddPacketToQueue(Packet packet, Node destination)
         {
-            if (IP == destination.IP)
-            {
-                bool packetExists = false;
-                foreach ( Packet item in Packets )
+            if (Packets.Count < MaxPackets)
+                if (IP == destination.IP)
                 {
-                    if (item.Content == packet.Content)
-                        packetExists = true;
+                    bool packetExists = false;
+                    foreach ( Packet item in Packets )
+                    {
+                        if (item.Content == packet.Content)
+                            packetExists = true;
+                    }
+                    if (packetExists == false)
+                        Packets.Enqueue(packet);
                 }
-                if (packetExists == false)
+                else
                     Packets.Enqueue(packet);
-            }
-            else
-            {
-                Packets.Enqueue(packet);
-            }
         }
 
         // Generate a random IP address
