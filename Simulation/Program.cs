@@ -92,23 +92,38 @@ namespace Simulation
                 string content = "Packet with index " + i;
                 int ttl = rnd.Next(packetTtlRange[0], (packetTtlRange[1] + 1));
 
-                Packet packet = new Packet(content, source.IP, destination.IP, ttl);
+                Packet packet = new Packet(content, source.IP, destination.IP, ttl, null);
 
                 source.Packets.Enqueue(packet);
             }
 
             // Send all packets from source node
-            SendAllPackets(network, source, destination, source);
+            SendAllPackets(source, destination, source);
 
             // Pring a list of nodes and packets for debugging
             Print(source, destination, network);
+
+            string answer;
+
+            do
+            {
+                Console.WriteLine("which node to send to: ");
+                answer = "192.168.1.";
+                answer += Console.ReadLine();
+                
+                Node tSource = network.Find(x => x.IP.Contains(answer));
+
+                SendAllPackets(source, destination, tSource);
+                Print(source, destination, network);
+
+            } while (answer != "exit");
 
             // Keep console open
             Console.WriteLine("\n\nPress enter to close...");
             Console.ReadLine();
         }
 
-        static void SendAllPackets(List<Node> network, Node source, Node destination, Node current)
+        static void SendAllPackets(Node source, Node destination, Node current)
         {
             if (current != destination)
             {
@@ -118,11 +133,10 @@ namespace Simulation
                     {
                         foreach (Node neighbor in current.Next)
                         {
-                            Packet newPacket = Packet.Clone(packet);
-
                             // Send the packet only if it's not going back or to the original sender
                             if (neighbor.IP != packet.Sender && neighbor.IP != packet.Source)
                             {
+                                Packet newPacket = Packet.Clone(packet);
                                 newPacket.Sender = current.IP;
                                 newPacket.PathTaken.Add(neighbor.IP);
                                 newPacket.TTL--;

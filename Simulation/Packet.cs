@@ -14,7 +14,7 @@ namespace Simulation
         public List<string> PathTaken;
 
         // Constructor
-        public Packet(string _content, string _source, string _destination, int _ttl)
+        public Packet(string _content, string _source, string _destination, int _ttl, List<string> _pathTaken)
         {
             Content = _content;
             Source = _source;
@@ -22,12 +22,22 @@ namespace Simulation
             Destination = _destination;
             TTL = _ttl;
             PathTaken = new List<string>();
-            PathTaken.Add(_source);
+            if (_pathTaken == null)
+            {
+                PathTaken.Add(_source);
+            }
+            else
+            {
+                foreach (string item in _pathTaken)
+                {
+                    PathTaken.Add(item);
+                }
+            }
         }
 
         public static Packet Clone(Packet original)
         {
-            Packet packet = new Packet(original.Content, original.Source, original.Destination, original.TTL);
+            Packet packet = new Packet(original.Content, original.Source, original.Destination, original.TTL, original.PathTaken);
             return packet;
         }
     }
