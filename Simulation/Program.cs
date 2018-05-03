@@ -8,6 +8,8 @@ namespace Simulation
     class Program
     {
 
+        public static Queue<Node> nodesToSend = new Queue<Node>();
+
         static void Main()
         {
             // Program settings
@@ -39,6 +41,7 @@ namespace Simulation
             // Set source and destination
             Node source = network.First();
             Node destination = network.Last();
+            nodesToSend.Enqueue(source);
 
             // Link Nodes together
             foreach ( Node node in network )
@@ -98,34 +101,20 @@ namespace Simulation
             }
 
             // Send all packets from source node
-            SendAllPackets(source, destination, source);
+            while (nodesToSend.Count > 0)
+                SendAllPackets(source, destination, nodesToSend.Dequeue());
 
             // Pring a list of nodes and packets for debugging
             Print(source, destination, network);
-
-            string answer;
-
-            do
-            {
-                Console.WriteLine("which node to send to: ");
-                answer = "192.168.1.";
-                answer += Console.ReadLine();
-                
-                Node tSource = network.Find(x => x.IP.Contains(answer));
-
-                SendAllPackets(source, destination, tSource);
-                Print(source, destination, network);
-
-            } while (answer != "exit");
 
             // Keep console open
             Console.WriteLine("\n\nPress enter to close...");
             Console.ReadLine();
         }
-
+        
         static void SendAllPackets(Node source, Node destination, Node current)
         {
-            if (current != destination)
+            if (current.IP != destination.IP)
             {
                 foreach (Packet packet in current.Packets)
                 {
@@ -141,12 +130,14 @@ namespace Simulation
                                 newPacket.PathTaken.Add(neighbor.IP);
                                 newPacket.TTL--;
                                 neighbor.Packets.Enqueue(newPacket);
+                                nodesToSend.Enqueue(neighbor);
                             }
                         }
                     }
                 }
                 // All packets are sent so clear the queue
                 current.Packets.Clear();
+
             }
         }
 
