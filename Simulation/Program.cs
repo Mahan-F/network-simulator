@@ -129,7 +129,7 @@ namespace Simulation
                                 newPacket.Sender = current.IP;
                                 newPacket.PathTaken.Add(neighbor.IP);
                                 newPacket.TTL--;
-                                neighbor.Packets.Enqueue(newPacket);
+                                neighbor.AddPacketToQueue(newPacket, destination);
                                 nodesToSend.Enqueue(neighbor);
                             }
                         }

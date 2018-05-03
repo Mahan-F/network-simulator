@@ -37,6 +37,26 @@ namespace Simulation
             IP = generateIP(network, IpPrefix);
         }
 
+        // Add item to packets queue
+        public void AddPacketToQueue(Packet packet, Node destination)
+        {
+            if (IP == destination.IP)
+            {
+                bool packetExists = false;
+                foreach ( Packet item in Packets )
+                {
+                    if (item.Content == packet.Content)
+                        packetExists = true;
+                }
+                if (packetExists == false)
+                    Packets.Enqueue(packet);
+            }
+            else
+            {
+                Packets.Enqueue(packet);
+            }
+        }
+
         // Generate a random IP address
         static private string generateIP(List<Node> network, string IpPrefix)
         {
