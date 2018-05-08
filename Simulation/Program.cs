@@ -9,6 +9,7 @@ namespace Simulation
     {
 
         public static Queue<Node> nodesToSend = new Queue<Node>();
+        public static List<Route> routingTable = new List<Route>();
 
         static void Main()
         {
@@ -96,7 +97,7 @@ namespace Simulation
                 string content = "Packet with index " + i;
                 int ttl = rnd.Next(packetTtlRange[0], (packetTtlRange[1] + 1));
 
-                Packet packet = new Packet(content, source.IP, destination.IP, ttl, null);
+                Packet packet = new Packet(content, source.IP, destination.IP, ttl, null, 0);
 
                 source.Packets.Enqueue(packet);
             }
@@ -129,9 +130,14 @@ namespace Simulation
                                 Packet newPacket = Packet.Clone(packet);
                                 newPacket.Sender = current.IP;
                                 newPacket.PathTaken.Add(neighbor.IP);
+                                newPacket.Hops++;
                                 newPacket.TTL--;
                                 neighbor.AddPacketToQueue(newPacket, destination);
                                 nodesToSend.Enqueue(neighbor);
+
+                                // Add the packet route to the routing table
+                                Route newRoute = new Route(1, neighbor.IP, newPacket.Hops);
+                                routingTable.Add(newRoute);
                             }
                         }
                     }
@@ -172,6 +178,14 @@ namespace Simulation
                 if (item.Packets.Count == 0)
                     Console.WriteLine("No packets.");
                 Console.WriteLine("\n\n");
+            }
+
+            //Print routing table
+            Console.WriteLine("\nRouting table:\n");
+            Console.WriteLine("Time\tDestination\tCost\tPort");
+            foreach(Route route in routingTable)
+            {
+                Console.WriteLine(route.Time + "\t" + route.Destination + "\t" + route.Cost + "\t" + route.Port);
             }
 
             /*

@@ -10,16 +10,18 @@ namespace Simulation
         public string Source;
         public string Sender;
         public string Destination;
+        public int Hops;
         public int TTL;
         public List<string> PathTaken;
 
         // Constructor
-        public Packet(string _content, string _source, string _destination, int _ttl, List<string> _pathTaken)
+        public Packet(string _content, string _source, string _destination, int _ttl, List<string> _pathTaken, int _hops)
         {
             Content = _content;
             Source = _source;
             Sender = _source;
             Destination = _destination;
+            Hops = _hops;
             TTL = _ttl;
             PathTaken = new List<string>();
             if (_pathTaken == null)
@@ -35,9 +37,10 @@ namespace Simulation
             }
         }
 
+        // Duplicate a packet
         public static Packet Clone(Packet original)
         {
-            Packet packet = new Packet(original.Content, original.Source, original.Destination, original.TTL, original.PathTaken);
+            Packet packet = new Packet(original.Content, original.Source, original.Destination, original.TTL, original.PathTaken, original.Hops);
             return packet;
         }
     }
