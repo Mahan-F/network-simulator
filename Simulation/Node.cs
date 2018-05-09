@@ -8,7 +8,7 @@ namespace Simulation
     class Node
     {
         private string _IP;
-        private List<Node> _Next = new List<Node>();
+        private Dictionary<Node, int> _Next = new Dictionary<Node, int>();
         private Queue<Packet> _Packets = new Queue<Packet>();
         private int _MaxPackets;
 
@@ -20,7 +20,7 @@ namespace Simulation
             set { _IP = value; }
         }
 
-        public List<Node> Next
+        public Dictionary<Node, int> Next
         {
             get { return _Next; }
             set { _Next = value; }

@@ -67,7 +67,7 @@ namespace Simulation
                     for (int k = 0; k < TotalNodes; ++k)
                     {
                         if (network[k] != node 
-                            && node.Next.IndexOf(network[k]) == -1 
+                            && node.Next.ContainsKey(network[k]) == false
                             && network.ElementAt(k).Next.Count < MaxNodesConnected
                             && network.ElementAt(k).Next.Count < minConnections.Next.Count)
                         {
@@ -76,13 +76,15 @@ namespace Simulation
                         }
                     }
 
-                    if (node.Next.IndexOf(minConnections) == -1
-                        && minConnections.Next.IndexOf(node) == -1
+                    if (node.Next.ContainsKey(minConnections) == false
+                        && minConnections.Next.ContainsKey(node) == false
                         && minConnections.Next.Count < MaxNodesConnected
                         && node.Next.Count < MaxNodesConnected)
                     {
-                        node.Next.Add(minConnections);
-                        network.ElementAt(minConnectionsIndex).Next.Add(node);
+                        // Generate a random number for the distance, up to 10
+                        int rndNumber = rnd.Next(10);
+                        node.Next.Add(minConnections, rndNumber);
+                        network.ElementAt(minConnectionsIndex).Next.Add(node, rndNumber);
                     }
                 }
 
@@ -122,21 +124,21 @@ namespace Simulation
                 {
                     if (packet.TTL != 0)
                     {
-                        foreach (Node neighbor in current.Next)
+                        foreach (KeyValuePair<Node, int> neighbor in current.Next)
                         {
                             // Send the packet only if it's not going back or to the original sender
-                            if (neighbor.IP != packet.Sender && neighbor.IP != packet.Source)
+                            if (neighbor.Key.IP != packet.Sender && neighbor.Key.IP != packet.Source)
                             {
                                 Packet newPacket = Packet.Clone(packet);
                                 newPacket.Sender = current.IP;
-                                newPacket.PathTaken.Add(neighbor.IP);
+                                newPacket.PathTaken.Add(neighbor.Key.IP);
                                 newPacket.Hops++;
                                 newPacket.TTL--;
-                                neighbor.AddPacketToQueue(newPacket, destination);
-                                nodesToSend.Enqueue(neighbor);
+                                neighbor.Key.AddPacketToQueue(newPacket, destination);
+                                nodesToSend.Enqueue(neighbor.Key);
 
                                 // Add the packet route to the routing table
-                                Route newRoute = new Route(1, neighbor.IP, newPacket.Hops);
+                                Route newRoute = new Route(1, neighbor.Key.IP, neighbor.Value);
                                 routingTable.Add(newRoute);
                             }
                         }
@@ -161,9 +163,9 @@ namespace Simulation
                 Console.WriteLine("Node details: ");
                 Console.WriteLine("Address: " + item.IP);
                 Console.WriteLine("Neighboring nodes: ");
-                foreach (Node neighbor in item.Next)
+                foreach (KeyValuePair<Node, int> neighbor in item.Next)
                 {
-                    Console.WriteLine("\t" + neighbor.IP);
+                    Console.WriteLine("\t" + neighbor.Key.IP);
                 }
                 Console.WriteLine("Packets: ");
                 foreach (Packet packet in item.Packets)
