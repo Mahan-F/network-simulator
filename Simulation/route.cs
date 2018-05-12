@@ -6,13 +6,21 @@ namespace Simulation
 {
     class Route
     {
+        private static int currentSequence;
+        private int _sequenceNo;
         private int _time;
         private string _destination;
         private int _cost;
         private int _port;
 
-        static Random rnd = new Random();
-
+        private static readonly Random Rnd = new Random();
+        
+        public int SequenceNo
+        {
+            get { return _sequenceNo; }
+            set { _sequenceNo = value; }
+        }
+        
         public int Time
         {
             get { return _time; }
@@ -39,15 +47,17 @@ namespace Simulation
 
         public Route(int _time, string _destination, int _cost)
         {
+            _sequenceNo = currentSequence;
             Time = _time;
             Destination = _destination;
             Cost = _cost;
             Port = GeneratePort();
+            currentSequence++;
         }
 
-        private int GeneratePort()
+        private static int GeneratePort()
         {
-            return rnd.Next(1023, 65536);
+            return Rnd.Next(1023, 65536);
         }
     }
 }

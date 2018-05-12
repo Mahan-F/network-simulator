@@ -2,29 +2,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Simulation
 {
     class Program
     {
 
-        public static Queue<Node> nodesToSend = new Queue<Node>();
-        public static List<Route> routingTable = new List<Route>();
+        private static Queue<Node> nodesToSend = new Queue<Node>();
+        private static List<Route> routingTable = new List<Route>();
 
-        static void Main()
+        private static void Main()
         {
             // Program settings
-            int totalNodes = 10;
-            int packetsToSend = 100;
-            int maxPacketsPerNode = 100;
-            int maxNodesConnected = 4;
+            const int totalNodes = 10;
+            const int packetsToSend = 100;
+            const int maxPacketsPerNode = 100;
+            const int maxNodesConnected = 4;
             int[] packetTtlRange = { 3, 8 }; // Range of TTL for packets
-            string ipPrefix = "192.168.1.";
+            const string ipPrefix = "192.168.1.";
+            const string tab = "  ";
 
-            RunSimulation(totalNodes, packetsToSend, maxNodesConnected, packetTtlRange, ipPrefix, maxPacketsPerNode);
+            RunSimulation(totalNodes, packetsToSend, maxNodesConnected, packetTtlRange, ipPrefix, maxPacketsPerNode, tab);
         }
 
-        static void RunSimulation(int TotalNodes, int PacketsToSend, int MaxNodesConnected, int[] packetTtlRange, string IpPrefix, int maxPacketsPerNode)
+        private static void RunSimulation(int TotalNodes, int PacketsToSend, int MaxNodesConnected, int[] packetTtlRange, string IpPrefix, int maxPacketsPerNode, string tab)
         {
 
             // Initialize random number generator
@@ -109,14 +111,11 @@ namespace Simulation
                 SendAllPackets(source, destination, nodesToSend.Dequeue());
 
             // Pring a list of nodes and packets for debugging
-            Print(source, destination, network, PacketsToSend);
+            Print(source, destination, network, PacketsToSend, tab);
 
-            // Keep console open
-            Console.WriteLine("\n\nPress enter to close...");
-            Console.ReadLine();
         }
         
-        static void SendAllPackets(Node source, Node destination, Node current)
+        private static void SendAllPackets(Node source, Node destination, Node current)
         {
             if (current.IP != destination.IP)
             {
@@ -150,63 +149,107 @@ namespace Simulation
             }
         }
 
-        static void Print(Node source, Node destination, List<Node> network, int packetsToSend)
+        private static void Print(Node source, Node destination, List<Node> network, int packetsToSend, string tab)
         {
 
             // Print the list of all nodes, their IP and their neighbors' IP
             Console.WriteLine("Starting node: " + source.IP);
             Console.WriteLine("Ending node: " + destination.IP);
             Console.WriteLine("Packets received: " + destination.Packets.Count + "/" + packetsToSend + "\n");
-
-            foreach (Node item in network)
+    
+            int option;
+            do
             {
-                Console.WriteLine("Node details: ");
-                Console.WriteLine("Address: " + item.IP);
-                Console.WriteLine("Neighboring nodes: ");
-                foreach (KeyValuePair<Node, int> neighbor in item.Next)
+                Console.WriteLine("\nChoose an option:");
+                PrintMenu();
+                
+                option = Convert.ToInt32(Console.ReadLine());
+                Console.Write("\n");
+                Console.Clear();
+                
+                switch (option)
                 {
-                    Console.WriteLine("\t" + neighbor.Key.IP);
+                    case 1: PrintNodeDetails(network, "none", tab);
+                        break;
+                    case 2: PrintNodeDetails(network, "neighbors", tab);
+                        break;
+                    case 3: PrintNodeDetails(network, "packets", tab);
+                        break;
+                    case 4: PrintNodeDetails(network, "all", tab);
+                        break;
+                    case 5: PrintRoutingTable();
+                        break;
+                    case 6: Console.WriteLine("Starting node: " + source.IP);
+                        Console.WriteLine("Ending node: " + destination.IP);
+                        Console.WriteLine("Packets received: " + destination.Packets.Count + "/" + packetsToSend + "\n");
+                        break;
+                    default: Console.WriteLine("That is not a valid option, please try again.");
+                        break;
                 }
-                Console.WriteLine("Packets: ");
-                foreach (Packet packet in item.Packets)
-                {
-                    Console.WriteLine("\t" + packet.Content + " with TTL " + packet.TTL);
-                    Console.WriteLine("\t\tPath taken: ");
-                    foreach (string path in packet.PathTaken)
-                    {
-                        Console.WriteLine("\t\t" + path);
-                    }
-                }
-                if (item.Packets.Count == 0)
-                    Console.WriteLine("No packets.");
-                Console.WriteLine("\n\n");
-            }
+            } while (option != -1);
 
-            //Print routing table
+        }
+
+        private static void PrintMenu()
+        {
+            Console.WriteLine("1. View all Nodes");
+            Console.WriteLine("2. View all Nodes along with their neighbors");
+            Console.WriteLine("3. View all Nodes along with their packets");
+            Console.WriteLine("4. View all Nodes with full details");
+            Console.WriteLine("5. View the routing table");
+            Console.WriteLine("6. View the program outcome");
+            
+        }
+
+        private static void PrintRoutingTable()
+        {
             Console.WriteLine("\nRouting table:\n");
             Console.WriteLine("Time\tDestination\tCost\tPort");
             foreach(Route route in routingTable)
             {
-                Console.WriteLine(route.Time + "\t" + route.Destination + "\t" + route.Cost + "\t" + route.Port);
+                Console.WriteLine(route.SequenceNo + "\t" + route.Time + "\t" + route.Destination + "\t" + route.Cost + "\t" + route.Port);
+                Thread.Sleep(10);
             }
+        }
 
-            /*
-            // Print the table of all nodes and their connections
-            for (int i = 0; i < TotalNodes; i++)
+        private static void PrintNodeDetails(List<Node> network, string type, string tab)
+        {
+            int nodeIndex = 1;
+            Console.WriteLine("Node details: ");
+            foreach (Node item in network)
             {
-                Console.Write("\t" + i);
-            }
-            for ( int r = 0; r < TotalNodes; ++r )
-            {
-                Console.Write("\n" + r + "\t");
-                for ( int c = 0; c < TotalNodes; ++c )
+                Console.WriteLine("Node " + nodeIndex + ":");
+                Console.WriteLine(tab + "Address: " + item.IP);
+                if (type == "neighbors" || type == "all")
                 {
-                    if (network[r].Next.Contains(network[c]))
-                        Console.Write("x\t");
-                    else
-                        Console.Write(" \t");
+                    Console.WriteLine(tab + "Neighboring nodes: ");
+                    foreach (KeyValuePair<Node, int> neighbor in item.Next)
+                    {
+                        Console.WriteLine(tab + tab + neighbor.Key.IP);
+                    }
                 }
-            }*/
+
+                if (type == "packets" || type == "all")
+                {
+                    Console.WriteLine(tab + "Packets: ");
+                    foreach (Packet packet in item.Packets)
+                    {
+                        Console.WriteLine(tab + tab + packet.Content + " with TTL " + packet.TTL);
+                        Console.WriteLine(tab + tab + tab + "Path taken: ");
+                        foreach (string path in packet.PathTaken)
+                        {
+                            Console.WriteLine(tab + tab + tab + path);
+                        }
+                    }
+
+                    if (item.Packets.Count == 0)
+                        Console.WriteLine(tab + tab + "No packets.");
+                }
+                
+                Console.WriteLine("\n");
+                nodeIndex++;
+                Thread.Sleep(50);
+            }
         }
     }
 }
