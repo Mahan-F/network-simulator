@@ -1,47 +1,45 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Simulation
 {
     class Node
     {
-        private string _IP;
-        private Dictionary<Node, int> _Next = new Dictionary<Node, int>();
-        private Queue<Packet> _Packets = new Queue<Packet>();
-        private int _MaxPackets;
+        private string _ip;
+        private Dictionary<Node, int> _next = new Dictionary<Node, int>();
+        private Queue<Packet> _packets = new Queue<Packet>();
+        private int _maxPackets;
 
-        static Random rnd = new Random();
+        static Random _rnd = new Random();
 
-        public string IP
+        public string Ip
         {
-            get { return _IP; }
-            set { _IP = value; }
+            get { return _ip; }
+            set { _ip = value; }
         }
 
         public Dictionary<Node, int> Next
         {
-            get { return _Next; }
-            set { _Next = value; }
+            get { return _next; }
+            set { _next = value; }
         }
 
         public Queue<Packet> Packets
         {
-            get { return _Packets; }
-            set { _Packets = value; }
+            get { return _packets; }
+            set { _packets = value; }
         }
 
         public int MaxPackets
         {
-            get { return _MaxPackets; }
-            set { _MaxPackets = value; }
+            get { return _maxPackets; }
+            set { _maxPackets = value; }
         }
 
         // Constructor
         public Node(List<Node> network, string ipPrefix, int maxPackets)
         {
-            IP = generateIP(network, ipPrefix);
+            Ip = GenerateIp(network, ipPrefix);
             MaxPackets = maxPackets;
         }
 
@@ -49,7 +47,7 @@ namespace Simulation
         public void AddPacketToQueue(Packet packet, Node destination)
         {
             if (Packets.Count < MaxPackets)
-                if (IP == destination.IP)
+                if (Ip == destination.Ip)
                 {
                     bool packetExists = false;
                     foreach ( Packet item in Packets )
@@ -65,32 +63,32 @@ namespace Simulation
         }
 
         // Generate a random IP address
-        static private string generateIP(List<Node> network, string IpPrefix)
+        private static string GenerateIp(List<Node> network, string ipPrefix)
         {
-            bool IpIsDuplicate;
-            string newIP = IpPrefix;
+            bool ipIsDuplicate;
+            string newIp;
 
             do
             {
-                IpIsDuplicate = false;
-                newIP = IpPrefix;
-                int number = rnd.Next(256);
-                newIP += number.ToString();
+                ipIsDuplicate = false;
+                newIp = ipPrefix;
+                int number = _rnd.Next(256);
+                newIp += number.ToString();
 
                 // Check for duplicate
                 foreach(Node node in network)
                 {
-                    if (node.IP == newIP)
+                    if (node.Ip == newIp)
                     {
-                        IpIsDuplicate = true;
+                        ipIsDuplicate = true;
                         break;
                     }
                
                 }
 
-            } while (IpIsDuplicate);
+            } while (ipIsDuplicate);
 
-            return newIP;
+            return newIp;
         }
     }
 }

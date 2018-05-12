@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Simulation
 {
     class Route
     {
-        private static int currentSequence;
+        private static int _currentSequence;
         private int _sequenceNo;
         private int _time;
         private string _destination;
@@ -45,14 +43,14 @@ namespace Simulation
             set { _port = value; }
         }
 
-        public Route(int _time, string _destination, int _cost)
+        public Route(int time, string destination, int cost)
         {
-            _sequenceNo = currentSequence;
-            Time = _time;
-            Destination = _destination;
-            Cost = _cost;
+            _sequenceNo = _currentSequence;
+            Time = time;
+            Destination = destination;
+            Cost = cost;
             Port = GeneratePort();
-            currentSequence++;
+            _currentSequence++;
         }
 
         private static int GeneratePort()

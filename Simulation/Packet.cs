@@ -1,36 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Simulation
 {
     public struct Packet
     {
-        public string Content;
-        public string Source;
+        public readonly string Content;
+        public readonly string Source;
         public string Sender;
-        public string Destination;
+        private readonly string _destination;
         public int Hops;
-        public int TTL;
-        public List<string> PathTaken;
+        public int Ttl;
+        public readonly List<string> PathTaken;
 
         // Constructor
-        public Packet(string _content, string _source, string _destination, int _ttl, List<string> _pathTaken, int _hops)
+        public Packet(string content, string source, string destination, int ttl, List<string> pathTaken, int hops)
         {
-            Content = _content;
-            Source = _source;
-            Sender = _source;
-            Destination = _destination;
-            Hops = _hops;
-            TTL = _ttl;
+            Content = content;
+            Source = source;
+            Sender = source;
+            _destination = destination;
+            Hops = hops;
+            Ttl = ttl;
             PathTaken = new List<string>();
-            if (_pathTaken == null)
+            if (pathTaken == null)
             {
-                PathTaken.Add(_source);
+                PathTaken.Add(source);
             }
             else
             {
-                foreach (string item in _pathTaken)
+                foreach (string item in pathTaken)
                 {
                     PathTaken.Add(item);
                 }
@@ -40,7 +38,7 @@ namespace Simulation
         // Duplicate a packet
         public static Packet Clone(Packet original)
         {
-            Packet packet = new Packet(original.Content, original.Source, original.Destination, original.TTL, original.PathTaken, original.Hops);
+            Packet packet = new Packet(original.Content, original.Source, original._destination, original.Ttl, original.PathTaken, original.Hops);
             return packet;
         }
     }
