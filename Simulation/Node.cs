@@ -5,36 +5,15 @@ namespace Simulation
 {
     class Node
     {
-        private string _ip;
-        private Dictionary<Node, int> _next = new Dictionary<Node, int>();
-        private Queue<Packet> _packets = new Queue<Packet>();
-        private int _maxPackets;
+        private static readonly Random Rnd = new Random();
 
-        static Random _rnd = new Random();
+        public string Ip { get; }
 
-        public string Ip
-        {
-            get { return _ip; }
-            set { _ip = value; }
-        }
+        public Dictionary<Node, int> Next { get; set; } = new Dictionary<Node, int>();
 
-        public Dictionary<Node, int> Next
-        {
-            get { return _next; }
-            set { _next = value; }
-        }
+        public Queue<Packet> Packets { get; set; } = new Queue<Packet>();
 
-        public Queue<Packet> Packets
-        {
-            get { return _packets; }
-            set { _packets = value; }
-        }
-
-        public int MaxPackets
-        {
-            get { return _maxPackets; }
-            set { _maxPackets = value; }
-        }
+        private int MaxPackets { get; }
 
         // Constructor
         public Node(List<Node> network, string ipPrefix, int maxPackets)
@@ -72,7 +51,7 @@ namespace Simulation
             {
                 ipIsDuplicate = false;
                 newIp = ipPrefix;
-                int number = _rnd.Next(256);
+                int number = Rnd.Next(256);
                 newIp += number.ToString();
 
                 // Check for duplicate

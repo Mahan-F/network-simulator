@@ -5,47 +5,22 @@ namespace Simulation
     class Route
     {
         private static int _currentSequence;
-        private int _sequenceNo;
-        private int _time;
-        private string _destination;
-        private int _cost;
-        private int _port;
 
         private static readonly Random Rnd = new Random();
         
-        public int SequenceNo
-        {
-            get { return _sequenceNo; }
-            set { _sequenceNo = value; }
-        }
-        
-        public int Time
-        {
-            get { return _time; }
-            set { _time = value; }
-        }
+        public int SequenceNo { get; }
 
-        public string Destination
-        {
-            get { return _destination; }
-            set { _destination = value; }
-        }
+        public int Time { get; }
 
-        public int Cost
-        {
-            get { return _cost; }
-            set { _cost = value; }
-        }
+        public string Destination { get; }
 
-        public int Port
-        {
-            get { return _port; }
-            set { _port = value; }
-        }
+        public int Cost { get; }
+
+        public int Port { get; }
 
         public Route(int time, string destination, int cost)
         {
-            _sequenceNo = _currentSequence;
+            SequenceNo = _currentSequence;
             Time = time;
             Destination = destination;
             Cost = cost;
