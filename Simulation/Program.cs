@@ -36,9 +36,10 @@ namespace Simulation
             int option;
             do
             {
-                Console.WriteLine("\nChoose an option:");
+                Console.WriteLine("\nChoose an option (-1 to exit):");
                 PrintMenu();
-                
+                Console.Write("Option: ");
+
                 option = Convert.ToInt32(Console.ReadLine());
                 Console.Write("\n");
                 Console.Clear();
