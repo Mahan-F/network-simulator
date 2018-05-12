@@ -137,7 +137,7 @@ namespace Simulation
                                 Program.NodesToSend.Enqueue(neighbor.Key);
 
                                 // Add the packet route to the routing table
-                                Route newRoute = new Route(1, neighbor.Key.Ip, neighbor.Value);
+                                Route newRoute = new Route(neighbor.Value, neighbor.Key.Ip, neighbor.Value);
                                 Program.RoutingTable.Add(newRoute);
                             }
                         }
